@@ -281,10 +281,41 @@ BigInt operator*(BigInt a, BigInt b) //Hàm tính tích 2 số kiểu BigInt
 	}
 	return res;
 }
-BigInt operator/(BigInt a, BigInt b)
+BigInt operator/(BigInt a, BigInt b) //Hàm tính thương 2 số kiểu BigInt
 { 
-	BigInt c = { 0 }; return c; 
-} //Hàm tính thương 2 số kiểu BigInt
+	BigInt r = { 0 };
+	int signed1 = (a.data[0] >> 31) & 1;
+	int signed2 = (b.data[0] >> 31) & 1;
+	int n = 128;
+	if (signed1^signed2 == 1)
+	{
+		BigInt mot = { 0, 0, 0, 1 };
+		b = ~b + mot;
+	}
+
+	while (n > 0)
+	{
+		int bit = (a.data[0] >> 31) & 1;
+
+		//Shift Left r,a
+		a = a << 1;
+		r = r << 1;
+		r.data[3] = r.data[3] | bit;
+		r = r - b;
+		int signed3 = r.data[0] >> 31 & 1;
+		if (signed3 == 1)
+		{
+			a = (a >> 1) << 1;
+			r = r + b;
+		}
+		else
+		{
+			a.data[3] = a.data[3] | 1;
+		}
+		n--;
+	}
+	return a;
+}
 
 BigInt operator<<(BigInt a, int x) //Hàm dịch trái 1 số nguyên kiểu BigInt
 {
